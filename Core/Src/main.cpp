@@ -109,7 +109,7 @@ void StartDefaultTask(void *argument)
   motor_init();
   for(;;)
   {
-    LED.HIGH();
+    motor_brake();
   }
   /* USER CODE END 5 */
 }
