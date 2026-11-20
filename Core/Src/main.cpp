@@ -20,7 +20,6 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "gpio.hpp"
-#include "motor_driver.hpp"
 #include "cmsis_os2.h"
 #include "stm32f4xx_hal_gpio.h"
 #include "FreeRTOS.h"
@@ -32,8 +31,10 @@
 #include "PLL.h"
 #include "i2c.h"
 #include "spi.h"
-#include "usart.h"
-#include "tim.h"
+#include "uart.h"
+#include "timer(program breaks without this).h"
+#include "motor_driver.h"
+
 
 /* Private function prototypes -----------------------------------------------*/
 void StartDefaultTask(void *argument);
@@ -49,16 +50,8 @@ int main(void)
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
   /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_ADC1_Init();
@@ -83,15 +76,11 @@ int main(void)
   /* Init scheduler */
   vTaskStartScheduler();
 
+  //Code should never reach here
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
-  /* USER CODE END 3 */
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -103,7 +92,6 @@ int main(void)
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-  /* USER CODE BEGIN 5 */
   /* Infinite loop */
   GPIO LED(GPIOB,GPIO_PIN_13);
   motor_init();
@@ -111,8 +99,9 @@ void StartDefaultTask(void *argument)
   {
     motor_brake();
   }
-  /* USER CODE END 5 */
 }
+
+
 
 
 /**

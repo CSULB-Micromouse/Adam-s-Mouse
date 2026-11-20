@@ -1,4 +1,4 @@
-#include "tim.h"
+#include "timer(program breaks without this).h"
 
 /* HAL_TIM_MspPostInit is implemented in your existing HAL MSP source. */
 
