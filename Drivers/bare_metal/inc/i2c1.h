@@ -40,15 +40,16 @@ bool I2C1_Read(uint8_t address, uint8_t *data, uint16_t length);
 @param flag
 @return boolean
 */
-static bool I2C1_WaitFlag(uint16_t flag);
-
+static bool I2C1_WaitFlag_1(uint16_t flag);
+//I call it I2C1_WaitFlag_1 because I2C1_WaitFlag is already taken
 
 /*
 @brief waits for i2c bus to become avaliable
 @param none
 @return boolean
 */
-static bool I2C1_WaitIdle(void);
+static bool I2C1_WaitIdle_1(void);
+//I call it I2C1_WaitIdle_1 because I2C1_WaitIdle is already taken
 
 
 /*

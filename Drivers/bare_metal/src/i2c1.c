@@ -48,7 +48,7 @@ void I2C1_Init(void)
 }
 
 // Wait for a flag in SR1
-static bool I2C1_WaitFlag(uint16_t flag)
+static bool I2C1_WaitFlag_1(uint16_t flag)
 {
     uint32_t timeout = 0x000FFFFF;
 
@@ -68,7 +68,7 @@ static bool I2C1_WaitFlag(uint16_t flag)
 }
 
 // Wait for bus to become available
-static bool I2C1_WaitIdle(void)
+static bool I2C1_WaitIdle_1(void)
 {
     uint32_t timeout = 0x000FFFFF;
 
@@ -88,21 +88,21 @@ bool I2C1_Write(uint8_t address, const uint8_t *data, uint16_t length)
         return false;
 
     //Wait until bus is free
-    if (!I2C1_WaitIdle())
+    if (!I2C1_WaitIdle_1())
         return false;
 
     //Generate START
     I2C1->CR1 |= 0x0100;
 
     //Wait for START condition
-    if (!I2C1_WaitFlag(0x0001))
+    if (!I2C1_WaitFlag_1(0x0001))
         goto error;
 
     //Send 7-bit address with write bit (0)
     I2C1->DR = address << 1;
 
     //Wait for address acknowledgment
-    if (!I2C1_WaitFlag(0x0002))
+    if (!I2C1_WaitFlag_1(0x0002))
         goto error;
 
     //Clear ADDR flag
@@ -113,14 +113,14 @@ bool I2C1_Write(uint8_t address, const uint8_t *data, uint16_t length)
     for (uint16_t i = 0; i < length; i++)
     {
         // Wait until data register is empty
-        if (!I2C1_WaitFlag(0x0080))
+        if (!I2C1_WaitFlag_1(0x0080))
             goto error;
 
         I2C1->DR = data[i];
     }
 
     //Wait until last byte finishes
-    if (!I2C1_WaitFlag(0x0004))
+    if (!I2C1_WaitFlag_1(0x0004))
         goto error;
 
     //Generate STOP
@@ -147,7 +147,7 @@ bool I2C1_Read(uint8_t address, uint8_t *data, uint16_t length)
         return false;
 
     // Wait until bus is free
-    if (!I2C1_WaitIdle())
+    if (!I2C1_WaitIdle_1())
         return false;
 
     //Prepare ACK and POS
@@ -157,14 +157,14 @@ bool I2C1_Read(uint8_t address, uint8_t *data, uint16_t length)
     //Generate START
     I2C1->CR1 |= 0x0100;
 
-    if (!I2C1_WaitFlag(0x0001))
+    if (!I2C1_WaitFlag_1(0x0001))
         goto error;
 
     //Send 7-bit address with read bit (1)
     I2C1->DR = (address << 1) | 0x01;
 
     //Wait for address acknowledgment
-    if (!I2C1_WaitFlag(0x0002))
+    if (!I2C1_WaitFlag_1(0x0002))
         goto error;
 
     /*don't understand 100% 
@@ -189,7 +189,7 @@ bool I2C1_Read(uint8_t address, uint8_t *data, uint16_t length)
 
         __set_PRIMASK(irq);
 
-        if (!I2C1_WaitFlag(0x0040))
+        if (!I2C1_WaitFlag_1(0x0040))
             goto error;
 
         data[0] = (uint8_t)I2C1->DR;
@@ -209,7 +209,7 @@ bool I2C1_Read(uint8_t address, uint8_t *data, uint16_t length)
 
         __set_PRIMASK(irq);
 
-        if (!I2C1_WaitFlag(0x0004))
+        if (!I2C1_WaitFlag_1(0x0004))
             goto error;
 
         irq = __get_PRIMASK();
@@ -232,14 +232,14 @@ bool I2C1_Read(uint8_t address, uint8_t *data, uint16_t length)
 
         while ((length - i) > 0x03)
         {
-            if (!I2C1_WaitFlag(0x0040))
+            if (!I2C1_WaitFlag_1(0x0040))
                 goto error;
 
             data[i++] = (uint8_t)I2C1->DR;
         }
 
         // Three bytes remaining
-        if (!I2C1_WaitFlag(0x0004))
+        if (!I2C1_WaitFlag_1(0x0004))
             goto error;
 
         uint32_t irq = __get_PRIMASK();
@@ -251,7 +251,7 @@ bool I2C1_Read(uint8_t address, uint8_t *data, uint16_t length)
         __set_PRIMASK(irq);
 
         // Wait for final two bytes
-        if (!I2C1_WaitFlag(0x0004))
+        if (!I2C1_WaitFlag_1(0x0004))
             goto error;
 
         irq = __get_PRIMASK();
@@ -297,7 +297,7 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
         return false;
 
     //Wait until bus is free
-    if (!I2C1_WaitIdle())
+    if (!I2C1_WaitIdle_1())
         return false;
 
     // Enable ACK, disable POS
@@ -307,13 +307,13 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
     //Generate START
     I2C1->CR1 |= 0x0100;
 
-    if (!I2C1_WaitFlag(0x0001))
+    if (!I2C1_WaitFlag_1(0x0001))
         goto error;
 
     //Send device address with write bit
     I2C1->DR = (uint16_t)address * 0x02;
 
-    if (!I2C1_WaitFlag(0x0002))
+    if (!I2C1_WaitFlag_1(0x0002))
         goto error;
 
     //Clear ADDR
@@ -321,24 +321,24 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
     (void)I2C1->SR2;
 
     //Send register address
-    if (!I2C1_WaitFlag(0x0080))
+    if (!I2C1_WaitFlag_1(0x0080))
         goto error;
 
     I2C1->DR = reg;
 
-    if (!I2C1_WaitFlag(0x0004))
+    if (!I2C1_WaitFlag_1(0x0004))
         goto error;
 
     //Generate repeated START
     I2C1->CR1 |= 0x0100;
 
-    if (!I2C1_WaitFlag(0x0001))
+    if (!I2C1_WaitFlag_1(0x0001))
         goto error;
 
     //Send device address with read bit
     I2C1->DR = ((uint16_t)address * 0x02) | 0x01;
 
-    if (!I2C1_WaitFlag(0x0002))
+    if (!I2C1_WaitFlag_1(0x0002))
         goto error;
 
     //Receive one byte
@@ -358,7 +358,7 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
 
         __set_PRIMASK(irq);
 
-        if (!I2C1_WaitFlag(0x0040))
+        if (!I2C1_WaitFlag_1(0x0040))
             goto error;
 
         data[0] = (uint8_t)I2C1->DR;
@@ -378,7 +378,7 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
 
         __set_PRIMASK(irq);
 
-        if (!I2C1_WaitFlag(0x0004))
+        if (!I2C1_WaitFlag_1(0x0004))
             goto error;
 
         irq = __get_PRIMASK();
@@ -401,14 +401,14 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
 
         while ((length - i) > 0x03)
         {
-            if (!I2C1_WaitFlag(0x0040))
+            if (!I2C1_WaitFlag_1(0x0040))
                 goto error;
 
             data[i++] = (uint8_t)I2C1->DR;
         }
 
         // Three bytes remaining
-        if (!I2C1_WaitFlag(0x0004))
+        if (!I2C1_WaitFlag_1(0x0004))
             goto error;
 
         uint32_t irq = __get_PRIMASK();
@@ -420,7 +420,7 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
         __set_PRIMASK(irq);
 
         // Wait for final two bytes
-        if (!I2C1_WaitFlag(0x0004))
+        if (!I2C1_WaitFlag_1(0x0004))
             goto error;
 
         irq = __get_PRIMASK();
@@ -435,7 +435,7 @@ bool I2C1_ReadRegister(uint8_t address, uint8_t reg, uint8_t *data, uint16_t len
     }
 
     //Wait for STOP to complete
-    if (!I2C1_WaitIdle())
+    if (!I2C1_WaitIdle_1())
         goto error;
 
     // 12. Restore ACK and POS
