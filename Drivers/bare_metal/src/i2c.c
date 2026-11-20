@@ -1,4 +1,4 @@
-#include "i2c.h"
+#include "i2c1.h"
 
 void I2C1_Init(void)
 {

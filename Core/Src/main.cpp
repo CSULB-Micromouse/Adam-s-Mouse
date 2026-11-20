@@ -30,6 +30,7 @@
 #include "adc.h"
 #include "PLL.h"
 #include "i2c.h"
+#include "i2c1.h"
 #include "spi.h"
 #include "uart.h"
 #include "timer(program breaks without this).h"
