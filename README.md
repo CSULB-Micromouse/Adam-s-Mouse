@@ -2,9 +2,6 @@
 
 FREE ALTIUM FILES CLICK HERE!!!: https://drive.google.com/file/d/1pe6UkcUI8a7llBmMtEnnNTT02ZzSuD0o/view
 
-
-# CSULB MicroMouse Fall 2026
-
 # First Time Setup 
 
 Clone repository
