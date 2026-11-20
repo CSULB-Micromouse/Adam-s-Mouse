@@ -95,7 +95,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   GPIO LED(GPIOB,GPIO_PIN_13);
   motor_init();
-  for(;;)
+  while(1)
   {
     motor_brake();
   }
